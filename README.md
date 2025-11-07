@@ -5,8 +5,8 @@ Cookie Sweeper is a Minesweeper-inspired game with a cookie twist!
 
 ## Features
 - Flag tiles you suspect contain bombs using cookies
-- Reveal tiles to see how many cookies are nearby
-- Win by flagging all cookie tiles
+- Reveal tiles to see how many bombs are nearby
+- Win by flagging all bomb tiles
 - Lose if you reveal a bomb
 
 ## How to Play

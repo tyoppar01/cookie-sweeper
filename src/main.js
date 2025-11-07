@@ -6,6 +6,9 @@ let timerInterval = 999;
 let timerId = null;
 let timerStarted = false;
 
+// flag variables
+let flagCount = bombCount;
+
 const config = {
   INITIAL_BOMB_COUNT: "initial-bomb-count",
   TIMER: "timer",
@@ -97,14 +100,12 @@ function flagTile(element) {
   timerStart();
   if (element.dataset.status === "hidden") {
     element.dataset.status = "flagged";
-    flagCount++;
+    flagCount--;
   } else if (element.dataset.status === "flagged") {
     element.dataset.status = "hidden";
-    flagCount--;
+    flagCount++;
   }
-
-  document.getElementById("flagger").innerText = flagCount;
-
+  setInitialValues(config.INITIAL_BOMB_COUNT, Math.max(0, flagCount));
 }
 
 function createMap() {

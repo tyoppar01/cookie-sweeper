@@ -1,7 +1,7 @@
 const mapSize = 10;
 const bombCount = 10;
 
-function createTile(status) {
+function createTile(status, bombCount) {
   const tileElement = document.createElement("div");
   tileElement.classList.add("tile");
   tileElement.dataset.status = "hidden";
@@ -9,8 +9,8 @@ function createTile(status) {
   tileElement.addEventListener("click", () => {
     if (tileElement.dataset.status !== "hidden") return;
     tileElement.dataset.status = status;
-    if (status === "empty" && tileElement.dataset.bombCount > 0) {
-      tileElement.textContent = tileElement.dataset.bombCount;
+    if (status === "empty" && bombCount > 0) {
+      tileElement.textContent = bombCount;
     } else {
       tileElement.textContent = "";
     }
@@ -87,13 +87,7 @@ function createMap() {
   for (let x = 0; x < mapSize; x++) {
     for (let y = 0; y < mapSize; y++) {
       const isBomb = bombLocations.some((b) => b.x === x && b.y === y);
-      createTile(isBomb ? "bomb" : "empty");
-      // store bomb counter in data attribute for later display
-      const mapDiv = document.getElementById("map");
-      const tileElement = mapDiv.lastChild;
-      if (!isBomb) {
-        tileElement.dataset.bombCount = bombCounterMap[x][y];
-      }
+      createTile(isBomb ? "bomb" : "empty", bombCounterMap[x][y]);
     }
   }
   // return map;

@@ -1,0 +1,33 @@
+.map{
+    display: grid;
+    grid-template-columns: repeat(var(--size), 40px);
+    grid-template-rows: repeat(var(--size), 40px);
+    gap: 2px;
+    padding: 2px;
+    background-color: #777;
+    width: fit-content;
+}
+
+.map > .tile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.map > .tile[data-status="hidden"]{
+    background-color: #ccc;
+    cursor: pointer;
+}
+
+.map > .tile[data-status="empty"]{
+    background-color: #eee;
+    cursor: default;
+}
+
+.map > .tile[data-status="bomb"]{
+    background-color: red;
+}
+
+.map > .tile[data-status="flagged"]{
+    background-color: yellow;
+}

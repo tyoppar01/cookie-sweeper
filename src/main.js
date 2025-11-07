@@ -204,6 +204,10 @@ function revealTile(tile, map) {
     return;
   if (isBomb) {
     tileElement.dataset.status = "bomb";
+    setTimeout(() => {
+      alert("[GAME OVER] You ate a bomb than a cookie! [GAME OVER]");
+      resetGame();
+    }, 1000);
     return;
   }
 

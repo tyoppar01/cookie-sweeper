@@ -30,14 +30,14 @@
     background-size: 100%;
     background-color: red;
     background-position: center;
-    background-image: url("/src/imgs/bomb-logo.png");
+    background-image: url("src/imgs/bomb-logo.png");
 }
 
 .map > .tile[data-status="flagged"]{
     background-size: 100%;
     background-color: rgb(206, 206, 199);
     background-position: center;
-    background-image: url("/src/imgs/cookie-logo.png");
+    background-image: url("src/imgs/cookie-logo.png");
 }
 
 .counter span {

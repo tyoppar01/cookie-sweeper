@@ -77,19 +77,21 @@ function generateBombCounterMap(bombLocations) {
 
 function flagTile(element) {
   timerStart();
-  if (element.dataset.status === "hidden") {
-    element.dataset.status = "flagged";
-    if (element.dataset.isBomb === "true") {
-      flagCount--;
+    if (element.dataset.status === "hidden") {
+      element.dataset.status = "flagged";
+      console.log('Flagged tile is bomb:', element.dataset.isBomb);
+      if (element.dataset.isBomb === "true") {
+        flagCount--;
+      }
+    } else if (element.dataset.status === "flagged") {
+      element.dataset.status = "hidden";
+      console.log('Unflagged tile is bomb:', element.dataset.isBomb);
+      if (element.dataset.isBomb === "true") {
+        flagCount++;
+      }
     }
-  } else if (element.dataset.status === "flagged") {
-    element.dataset.status = "hidden";
-    if (element.dataset.isBomb === "true") {
-      flagCount++;
-    }
-  }
-  // setInitialValues(config.INITIAL_BOMB_COUNT, Math.max(0, flagCount));
-  checkWinCondition();
+    setInitialValues(config.INITIAL_BOMB_COUNT, Math.max(0, flagCount));
+    checkWinCondition();
 }
 
 function createMap() {
@@ -117,6 +119,11 @@ function createMap() {
         },
       };
       row.push(tile);
+      if (isBomb) {
+        tile.element.dataset.isBomb = "true";
+      } else {
+        tile.element.dataset.isBomb = "false";
+      }
     }
     map.push(row);
   }

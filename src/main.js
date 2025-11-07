@@ -1,25 +1,45 @@
 const mapSize = 10;
 const bombCount = 10;
 
+// timer variables
+let timerInterval = 999;
+let timerId = null;
+let timerStarted = false;
+
 function createTile(status, bombCount) {
+
   const tileElement = document.createElement("div");
   tileElement.classList.add("tile");
   tileElement.dataset.status = "hidden";
+  
   // bombCount hereeeee
   tileElement.addEventListener("click", () => {
+
+    // Tile Status
     if (tileElement.dataset.status !== "hidden") return;
     tileElement.dataset.status = status;
+
+    // Tile Status is Bomb
+    if (status === "bomb") { timerPause() ;}
+
+    timerStart();
+
+    // Tile Status is Empty
     if (status === "empty" && bombCount > 0) {
       tileElement.textContent = bombCount;
     } else {
       tileElement.textContent = "";
     }
+
   });
+
   tileElement.addEventListener("contextmenu", (e) => {
     e.preventDefault();
     flagTile(tileElement);
   });
+
   document.getElementById("map").appendChild(tileElement);
+
 }
 
 function generateBombLocations() {
@@ -91,6 +111,37 @@ function createMap() {
     }
   }
   // return map;
+}
+
+function timeDecrement() {
+  timerInterval--;
+  document.getElementById("timer").innerText = timerInterval;
+
+  if (timerInterval <= 0) {
+    clearInterval(timerID);
+    alert("Time's up! Game Over.");
+  }
+}
+
+function timerReset() {
+  clearInterval(timerID);
+  timerInterval = 999;
+  timerStarted = false;
+  document.getElementById("timer").innerText = timerInterval;
+}
+
+function timerStart() {
+  if (!timerStarted) {
+    timerStarted = true;
+    timerId = setInterval(timeDecrement, 1000);
+  }
+}
+
+function timerPause() {
+  clearInterval(timerId);
+  setTimeout( () => {
+    alert("BOMB! Game Over.");
+  }, 100)
 }
 
 let data = createMap();

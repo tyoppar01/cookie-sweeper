@@ -151,7 +151,7 @@ function setInitialValues(id, value) {
   document.getElementById(id).textContent = value;
 }
 
-setInitialBombCount(config.INITIAL_BOMB_COUNT, bombCount);
+setInitialValues(config.INITIAL_BOMB_COUNT, bombCount);
 setInitialValues(config.TIMER, timerInterval);
 
 let data = createMap();

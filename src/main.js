@@ -151,7 +151,7 @@ function timerStart() {
 function timerPause() {
   clearInterval(timerId);
   setTimeout(() => {
-    alert("BOMB! Game Over.");
+    alert("[GAME OVER] You ate a bomb than a cookie! [GAME OVER]");
   }, 100);
 }
 

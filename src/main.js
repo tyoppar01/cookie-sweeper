@@ -1,8 +1,5 @@
 const mapSize = 10;
 const bombCount = 10;
-let timerInterval = 999;
-let timerId = null;
-let timerStarted = false;
 
 function createTile(status, bombCount) {
   const tileElement = document.createElement("div");
@@ -12,11 +9,8 @@ function createTile(status, bombCount) {
   tileElement.addEventListener("click", () => {
     if (tileElement.dataset.status !== "hidden") return;
     tileElement.dataset.status = status;
-    timerStart();
-
-    if (status === "bomb") { timerPause() ;}
-    if (status === "empty" && tileElement.dataset.bombCount > 0) {
-      tileElement.textContent = tileElement.dataset.bombCount;
+    if (status === "empty" && bombCount > 0) {
+      tileElement.textContent = bombCount;
     } else {
       tileElement.textContent = "";
     }
@@ -99,37 +93,4 @@ function createMap() {
   // return map;
 }
 
-function timeDecrement() {
-  timerInterval--;
-  document.getElementById("timer").innerText = timerInterval;
-
-  if (timerInterval <= 0) {
-    clearInterval(timerID);
-    alert("Time's up! Game Over.");
-  }
-}
-
-function timerReset() {
-  clearInterval(timerID);
-  timerInterval = 999;
-  timerStarted = false;
-  document.getElementById("timer").innerText = timerInterval;
-}
-
-function timerStart() {
-  if (!timerStarted) {
-    timerStarted = true;
-    timerId = setInterval(timeDecrement, 1000);
-  }
-}
-
-function timerPause() {
-  clearInterval(timerId);
-  setTimeout( () => {
-    alert("BOMB! Game Over.");
-  }, 100)
-}
-
 let data = createMap();
-
-document.getElementById("startBtn").addEventListener("click", startGame);

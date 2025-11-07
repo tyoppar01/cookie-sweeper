@@ -1,5 +1,6 @@
 const mapSize = 10;
 const bombCount = 10;
+const timerInterval = 999;
 
 function createTile(status) {
   const tileElement = document.createElement("div");
@@ -97,6 +98,25 @@ function createMap() {
     }
   }
   // return map;
+}
+
+function timeDecrement() {
+  timerInterval--;
+  document.getElementById("timer").innerText = timerInterval;
+  if (timerInterval <= 0) {
+    clearInterval(timer);
+    alert("Time's up! Game Over.");
+  }
+}
+
+function timerReset() {
+  timerInterval = 999;
+  document.getElementById("timer").innerText = timerInterval;
+}
+
+function startGame() {
+  timerInterval = setInterval(timeDecrement, 1000);
+  document.getElementById("timer").innerText = timerInterval;
 }
 
 let data = createMap();

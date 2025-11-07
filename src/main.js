@@ -14,32 +14,10 @@ const config = {
   TIMER: "timer",
 };
 
-function createTile(status, bombCount) {
+function createTile() {
   const tileElement = document.createElement("div");
   tileElement.classList.add("tile");
   tileElement.dataset.status = "hidden";
-
-  // bombCount hereeeee
-  tileElement.addEventListener("click", () => {
-    // Tile Status
-    if (tileElement.dataset.status !== "hidden") return;
-    tileElement.dataset.status = status;
-
-    // Tile Status is Bomb
-    if (status === "bomb") {
-      timerPause();
-    }
-
-    timerStart();
-
-    // Tile Status is Empty
-    if (status === "empty" && bombCount > 0) {
-      tileElement.textContent = bombCount;
-    } else {
-      tileElement.textContent = "";
-    }
-    checkWinCondition();
-  });
 
   tileElement.addEventListener("contextmenu", (e) => {
     e.preventDefault();
@@ -47,6 +25,7 @@ function createTile(status, bombCount) {
   });
 
   document.getElementById("map").appendChild(tileElement);
+  return tileElement;
 }
 
 function generateBombLocations() {
@@ -97,7 +76,6 @@ function generateBombCounterMap(bombLocations) {
 }
 
 function flagTile(element) {
-
   timerStart();
   if (element.dataset.status === "hidden") {
     element.dataset.status = "flagged";
@@ -110,7 +88,7 @@ function flagTile(element) {
       flagCount++;
     }
   }
-  setInitialValues(config.INITIAL_BOMB_COUNT, Math.max(0, flagCount));
+  // setInitialValues(config.INITIAL_BOMB_COUNT, Math.max(0, flagCount));
   checkWinCondition();
 }
 
@@ -118,22 +96,31 @@ function createMap() {
   document.getElementById("map").style.setProperty("--size", mapSize);
   let map = [];
   let bombLocations = generateBombLocations();
-  console.log(bombLocations);
   // Generate bomb counter map
   let bombCounterMap = generateBombCounterMap(bombLocations);
   for (let x = 0; x < mapSize; x++) {
+    let row = [];
     for (let y = 0; y < mapSize; y++) {
       const isBomb = bombLocations.some((b) => b.x === x && b.y === y);
-      createTile(isBomb ? "bomb" : "empty", bombCounterMap[x][y]);
-      // mark bomb tiles for flag logic
-      const mapDiv = document.getElementById("map");
-      const tileElement = mapDiv.lastChild;
-      if (isBomb) {
-        tileElement.dataset.isBomb = "true";
-      }
+      const element = createTile();
+      const tile = {
+        element,
+        x,
+        y,
+        bombCount: bombCounterMap[x][y],
+        isBomb,
+        get status() {
+          return this.element.dataset.status;
+        },
+        set status(value) {
+          this.element.dataset.status = value;
+        },
+      };
+      row.push(tile);
     }
+    map.push(row);
   }
-  // return map;
+  return map;
 }
 
 function timeDecrement() {
@@ -162,7 +149,7 @@ function timerStart() {
 
 function timerPause() {
   clearInterval(timerId);
-  if (arguments[0] === 'win') {
+  if (arguments[0] === "win") {
     // do nothing, win alert will be shown by win logic
     return;
   }
@@ -170,7 +157,6 @@ function timerPause() {
     alert("[GAME OVER] You ate a bomb than a cookie! [GAME OVER]");
   }, 100);
 }
-
 
 function resetGame() {
   // clear map tiles
@@ -181,10 +167,11 @@ function resetGame() {
   // reset timer
   if (typeof timerReset === "function") {
     timerReset();
-    setInitialValues(config.INITIAL_BOMB_COUNT, bombCount)
+    setInitialValues(config.INITIAL_BOMB_COUNT, bombCount);
   }
   // recreate map
-  createMap();
+  map = createMap();
+  addClickEvent(map);
 }
 
 function setInitialValues(id, value) {
@@ -194,26 +181,83 @@ function setInitialValues(id, value) {
 setInitialValues(config.INITIAL_BOMB_COUNT, bombCount);
 setInitialValues(config.TIMER, timerInterval);
 
-let data = createMap();
+let map = createMap();
+addClickEvent(map);
+
+function getNearbyTiles(map, x, y) {
+  const nearbyTiles = [];
+  for (xOffset = -1; xOffset <= 1; xOffset++) {
+    for (yOffset = -1; yOffset <= 1; yOffset++) {
+      let tile = map[x + xOffset]?.[y + yOffset];
+      tile && nearbyTiles.push(tile);
+    }
+  }
+  return nearbyTiles;
+}
+
+function revealTile(tile, map) {
+  const { isBomb, bombCount: tileBombCount, element: tileElement } = tile;
+  if (
+    tileElement.dataset.status !== "hidden" ||
+    tileElement.dataset.status === "empty"
+  )
+    return;
+  if (isBomb) {
+    tileElement.dataset.status = "bomb";
+    setTimeout(() => {
+      alert("[GAME OVER] You ate a bomb than a cookie! [GAME OVER]");
+      resetGame();
+    }, 1000);
+    return;
+  }
+
+  const nearbyTiles = getNearbyTiles(map, tile.x, tile.y).filter(
+    (tile) => !tile.isBomb
+  );
+  if (tileBombCount > 0) {
+    tileElement.dataset.status = "empty";
+    tileElement.textContent = tileBombCount;
+  } else {
+    if (tileBombCount === 0) {
+      tileElement.dataset.status = "empty";
+    }
+    nearbyTiles.forEach((tile) => {
+      revealTile(tile, map);
+    });
+  }
+}
+
+function addClickEvent(map) {
+  map.forEach((row) => {
+    row.forEach((tile) => {
+      const tileElement = tile.element;
+      // console.log(t);
+      tileElement.addEventListener("click", () => {
+        revealTile(tile, map);
+        checkWinCondition();
+      });
+    });
+  });
+}
 
 document.getElementById("resetBtn").addEventListener("click", resetGame);
 
 document.getElementById("startBtn").addEventListener("click", startGame);
 
 function checkWinCondition() {
-  // WIN YAY if all bombs are flagged
-  const tiles = document.querySelectorAll('#map .tile');
-  let bombsRemaining = 0;
-  for (const tile of tiles) {
-    if (tile.dataset.isBomb === "true" && tile.dataset.status !== "flagged") {
-      bombsRemaining++;
-    }
-  }
-  console.log('Bombs remaining (unflagged):', bombsRemaining);
+  let bombsRemaining = bombCount;
+  map.forEach((row) => {
+    row.forEach((tile) => {
+      tile.element.dataset.status === "flagged" &&
+        tile.isBomb &&
+        bombsRemaining--;
+    });
+  });
+  console.log("Bombs remaining (unflagged):", bombsRemaining);
   if (bombsRemaining === 0) {
-    timerPause('win');
+    timerPause("win");
     setTimeout(() => {
-      alert('You win!');
+      alert("You win!");
     }, 100);
   }
 }

@@ -32,11 +32,13 @@ function createMap() {
   document.getElementById("map").style.setProperty("--size", mapSize);
   let map = [];
   let bombLocations = generateBombLocations();
-  // TODO: Generate location of bombs and adjacent bomb counts
+  console.log(bombLocations);
+  // TODO: Generate adjacent bomb counts
   for (let x = 0; x < mapSize; x++) {
     // let row = [];
     for (let y = 0; y < mapSize; y++) {
-      createTile("empty");
+      const isBomb = bombLocations.some((b) => b.x === x && b.y === y);
+      createTile(isBomb ? "bomb" : "empty");
       // row.push(tileMeta);
     }
     // map.push(row);

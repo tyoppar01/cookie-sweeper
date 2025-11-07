@@ -7,12 +7,17 @@ function createTile(status) {
   tileElement.dataset.status = "hidden";
   // bombCount hereeeee
   tileElement.addEventListener("click", () => {
+    if (tileElement.dataset.status !== "hidden") return;
     tileElement.dataset.status = status;
     if (status === "empty" && tileElement.dataset.bombCount > 0) {
       tileElement.textContent = tileElement.dataset.bombCount;
     } else {
       tileElement.textContent = "";
     }
+  });
+  tileElement.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    flagTile(tileElement);
   });
   document.getElementById("map").appendChild(tileElement);
 }
@@ -36,7 +41,9 @@ function generateBombLocations() {
 
 function generateBombCounterMap(bombLocations) {
   //create a 2D array for bomb counters
-  const bombCounterMap = Array.from({ length: mapSize }, () => Array(mapSize).fill(0));
+  const bombCounterMap = Array.from({ length: mapSize }, () =>
+    Array(mapSize).fill(0)
+  );
   for (let x = 0; x < mapSize; x++) {
     for (let y = 0; y < mapSize; y++) {
       let count = 0;
@@ -46,9 +53,11 @@ function generateBombCounterMap(bombLocations) {
           const nx = x + dx;
           const ny = y + dy;
           if (
-            nx >= 0 && nx < mapSize &&
-            ny >= 0 && ny < mapSize &&
-            bombLocations.some(b => b.x === nx && b.y === ny)
+            nx >= 0 &&
+            nx < mapSize &&
+            ny >= 0 &&
+            ny < mapSize &&
+            bombLocations.some((b) => b.x === nx && b.y === ny)
           ) {
             count++;
           }
@@ -58,6 +67,12 @@ function generateBombCounterMap(bombLocations) {
     }
   }
   return bombCounterMap;
+}
+
+function flagTile(element) {
+  if (element.dataset.status === "hidden") {
+    element.dataset.status = "flagged";
+  }
 }
 
 function createMap() {

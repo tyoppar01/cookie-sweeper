@@ -6,21 +6,26 @@ let timerInterval = 999;
 let timerId = null;
 let timerStarted = false;
 
-function createTile(status, bombCount) {
+const config = {
+  INITIAL_BOMB_COUNT: "initial-bomb-count",
+  TIMER: "timer",
+};
 
+function createTile(status, bombCount) {
   const tileElement = document.createElement("div");
   tileElement.classList.add("tile");
   tileElement.dataset.status = "hidden";
-  
+
   // bombCount hereeeee
   tileElement.addEventListener("click", () => {
-
     // Tile Status
     if (tileElement.dataset.status !== "hidden") return;
     tileElement.dataset.status = status;
 
     // Tile Status is Bomb
-    if (status === "bomb") { timerPause() ;}
+    if (status === "bomb") {
+      timerPause();
+    }
 
     timerStart();
 
@@ -30,7 +35,6 @@ function createTile(status, bombCount) {
     } else {
       tileElement.textContent = "";
     }
-
   });
 
   tileElement.addEventListener("contextmenu", (e) => {
@@ -39,7 +43,6 @@ function createTile(status, bombCount) {
   });
 
   document.getElementById("map").appendChild(tileElement);
-
 }
 
 function generateBombLocations() {
@@ -139,9 +142,16 @@ function timerStart() {
 
 function timerPause() {
   clearInterval(timerId);
-  setTimeout( () => {
+  setTimeout(() => {
     alert("BOMB! Game Over.");
-  }, 100)
+  }, 100);
 }
+
+function setInitialValues(id, value) {
+  document.getElementById(id).textContent = value;
+}
+
+setInitialValues(config.INITIAL_BOMB_COUNT, bombCount);
+setInitialValues(config.TIMER, timerInterval);
 
 let data = createMap();

@@ -38,6 +38,7 @@ function createTile(status, bombCount) {
     } else {
       tileElement.textContent = "";
     }
+    checkWinCondition();
   });
 
   tileElement.addEventListener("contextmenu", (e) => {
@@ -100,12 +101,17 @@ function flagTile(element) {
   timerStart();
   if (element.dataset.status === "hidden") {
     element.dataset.status = "flagged";
-    flagCount--;
+    if (element.dataset.isBomb === "true") {
+      flagCount--;
+    }
   } else if (element.dataset.status === "flagged") {
     element.dataset.status = "hidden";
-    flagCount++;
+    if (element.dataset.isBomb === "true") {
+      flagCount++;
+    }
   }
   setInitialValues(config.INITIAL_BOMB_COUNT, Math.max(0, flagCount));
+  checkWinCondition();
 }
 
 function createMap() {
@@ -119,6 +125,12 @@ function createMap() {
     for (let y = 0; y < mapSize; y++) {
       const isBomb = bombLocations.some((b) => b.x === x && b.y === y);
       createTile(isBomb ? "bomb" : "empty", bombCounterMap[x][y]);
+      // mark bomb tiles for flag logic
+      const mapDiv = document.getElementById("map");
+      const tileElement = mapDiv.lastChild;
+      if (isBomb) {
+        tileElement.dataset.isBomb = "true";
+      }
     }
   }
   // return map;
@@ -150,6 +162,10 @@ function timerStart() {
 
 function timerPause() {
   clearInterval(timerId);
+  if (arguments[0] === 'win') {
+    // do nothing, win alert will be shown by win logic
+    return;
+  }
   setTimeout(() => {
     alert("BOMB! Game Over.");
   }, 100);
@@ -183,3 +199,21 @@ let data = createMap();
 document.getElementById("resetBtn").addEventListener("click", resetGame);
 
 document.getElementById("startBtn").addEventListener("click", startGame);
+
+function checkWinCondition() {
+  // WIN YAY if all bombs are flagged
+  const tiles = document.querySelectorAll('#map .tile');
+  let bombsRemaining = 0;
+  for (const tile of tiles) {
+    if (tile.dataset.isBomb === "true" && tile.dataset.status !== "flagged") {
+      bombsRemaining++;
+    }
+  }
+  console.log('Bombs remaining (unflagged):', bombsRemaining);
+  if (bombsRemaining === 0) {
+    timerPause('win');
+    setTimeout(() => {
+      alert('You win!');
+    }, 100);
+  }
+}

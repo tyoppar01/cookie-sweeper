@@ -165,6 +165,7 @@ function resetGame() {
   // reset timer
   if (typeof timerReset === "function") {
     timerReset();
+    setInitialValues(config.INITIAL_BOMB_COUNT, bombCount)
   }
   // recreate map
   createMap();

@@ -118,13 +118,13 @@ function timeDecrement() {
   document.getElementById("timer").innerText = timerInterval;
 
   if (timerInterval <= 0) {
-    clearInterval(timerID);
+    clearInterval(timerId);
     alert("Time's up! Game Over.");
   }
 }
 
 function timerReset() {
-  clearInterval(timerID);
+  clearInterval(timerId);
   timerInterval = 999;
   timerStarted = false;
   document.getElementById("timer").innerText = timerInterval;
@@ -144,4 +144,23 @@ function timerPause() {
   }, 100)
 }
 
+
+function resetGame() {
+  // clear map tiles
+  const mapDiv = document.getElementById("map");
+  while (mapDiv.firstChild) {
+    mapDiv.removeChild(mapDiv.firstChild);
+  }
+  // reset timer
+  if (typeof timerReset === "function") {
+    timerReset();
+  }
+  // recreate map
+  createMap();
+}
+
 let data = createMap();
+
+document.getElementById("resetBtn").addEventListener("click", resetGame);
+
+document.getElementById("startBtn").addEventListener("click", startGame);

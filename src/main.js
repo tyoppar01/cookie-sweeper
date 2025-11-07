@@ -6,6 +6,9 @@ let timerInterval = 999;
 let timerId = null;
 let timerStarted = false;
 
+// flag variables
+let flagCount = 0;
+
 function createTile(status, bombCount) {
 
   const tileElement = document.createElement("div");
@@ -90,11 +93,18 @@ function generateBombCounterMap(bombLocations) {
 }
 
 function flagTile(element) {
+
+  timerStart();
   if (element.dataset.status === "hidden") {
     element.dataset.status = "flagged";
+    flagCount++;
   } else if (element.dataset.status === "flagged") {
     element.dataset.status = "hidden";
+    flagCount--;
   }
+
+  document.getElementById("flagger").innerText = flagCount;
+
 }
 
 function createMap() {

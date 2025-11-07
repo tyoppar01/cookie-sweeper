@@ -72,6 +72,8 @@ function generateBombCounterMap(bombLocations) {
 function flagTile(element) {
   if (element.dataset.status === "hidden") {
     element.dataset.status = "flagged";
+  } else if (element.dataset.status === "flagged") {
+    element.dataset.status = "hidden";
   }
 }
 

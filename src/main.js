@@ -1,14 +1,15 @@
 const mapSize = 10;
 const bombCount = 10;
 
-const config = {
-  INITIAL_BOMB_COUNT: "initial-bomb-count",
-};
-
 // timer variables
 let timerInterval = 999;
 let timerId = null;
 let timerStarted = false;
+
+const config = {
+  INITIAL_BOMB_COUNT: "initial-bomb-count",
+  TIMER: "timer",
+};
 
 function createTile(status, bombCount) {
   const tileElement = document.createElement("div");
@@ -146,9 +147,11 @@ function timerPause() {
   }, 100);
 }
 
-function setInitialBombCount() {
-  document.getElementById(config.INITIAL_BOMB_COUNT).textContent = bombCount;
+function setInitialValues(id, value) {
+  document.getElementById(id).textContent = value;
 }
 
-setInitialBombCount();
+setInitialBombCount(config.INITIAL_BOMB_COUNT, bombCount);
+setInitialValues(config.TIMER, timerInterval);
+
 let data = createMap();

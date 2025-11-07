@@ -6,6 +6,9 @@ let timerInterval = 999;
 let timerId = null;
 let timerStarted = false;
 
+// flag variables
+let flagCount = bombCount;
+
 const config = {
   INITIAL_BOMB_COUNT: "initial-bomb-count",
   TIMER: "timer",
@@ -93,11 +96,16 @@ function generateBombCounterMap(bombLocations) {
 }
 
 function flagTile(element) {
+
+  timerStart();
   if (element.dataset.status === "hidden") {
     element.dataset.status = "flagged";
+    flagCount--;
   } else if (element.dataset.status === "flagged") {
     element.dataset.status = "hidden";
+    flagCount++;
   }
+  setInitialValues(config.INITIAL_BOMB_COUNT, Math.max(0, flagCount));
 }
 
 function createMap() {
@@ -157,6 +165,7 @@ function resetGame() {
   // reset timer
   if (typeof timerReset === "function") {
     timerReset();
+    setInitialValues(config.INITIAL_BOMB_COUNT, bombCount)
   }
   // recreate map
   createMap();
